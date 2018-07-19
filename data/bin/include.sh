@@ -111,7 +111,7 @@ function check_container_info() {
 function guess_volumes() {
     declare -a _files=("$_etc" "$_log" "$_root")
     local _file="/proc/self/mountinfo"
-    local _map=""
+    local _map="$_noguess"
 
     for i in "${!_files[@]}"; do
         local _localpath=$(grep ${_files[$i]} ${_file} | grep -v '/volumes/' | cut -f 4,9 -d" " | perl -e 's{^(\S+)\s+(\S+)$}{$2$1}' -p)
@@ -139,7 +139,7 @@ function write_systemd_file() {
 }
 
 function run_init() {
-    if [ ! "$(is_empty ${_etc})" ]; then
+    if [ -z "$_noguess" -a ! "$(is_empty ${_etc})" ]; then
         return 1
     fi
 
